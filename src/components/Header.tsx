@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { FileSpreadsheet } from 'lucide-react';
 
 export function Header() {
   return (
@@ -7,10 +6,14 @@ export function Header() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex items-center gap-3 mb-8"
+      className="flex items-center gap-4 mb-8"
     >
-      <div className="p-2.5 rounded-xl gradient-primary shadow-glow border border-border">
-        <FileSpreadsheet className="w-7 h-7 text-primary-foreground" />
+      <div className="flex-shrink-0">
+        <img 
+          src="/schmidt1.png" 
+          alt="Schmidt Distribuidora de Alumínio" 
+          className="h-16 w-auto object-contain"
+        />
       </div>
       <div>
         <h1 className="text-2xl font-bold text-foreground tracking-tight">

@@ -176,11 +176,11 @@ const MAX_MATERIALS_DISPLAY = 1;
 
 /**
  * CNPJs/CPFs da empresa usuária (para detecção de entrada/saída)
- * Adicione aqui os CNPJs da sua empresa para identificação correta
+ * Schmidt Distribuidora de Alumínio
  */
 const EMPRESA_CNPJS = [
-  '05255986000164', // CNPJ principal (sem formatação)
-  // Adicione outros CNPJs/filiais se necessário
+  '05255986000164', // MATRIZ
+  '05255986000326', // FILIAL
 ];
 
 /**
