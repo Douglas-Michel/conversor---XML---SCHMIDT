@@ -40,6 +40,8 @@ export function exportToExcel(notas: NotaFiscal[], fileName: string = 'notas_fis
   const data = normalizedNotas.map((nota) => ({
     'DATA EMISSÃO': parseDate(nota.dataEmissao || today),
     'TIPO NF': nota.tipoOperacao || '',
+    'CFOP': nota.cfop || '',
+    'CLASSIFICAÇÃO': nota.tipoNF || '',
     'FORNECEDOR/CLIENTE': nota.fornecedorCliente?.toUpperCase() || '',
     'Nº NF-E': nota.tipo === 'NF-e' ? nota.numero : '',
     'Nº CT-E': nota.numeroCTe || '',

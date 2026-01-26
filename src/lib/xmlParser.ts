@@ -42,6 +42,8 @@ export interface NotaFiscal {
   id: string;
   tipo: TipoDocumento;
   tipoOperacao: TipoOperacao;
+  tipoNF: string;
+  cfop: string;
   numero: string;
   numeroCTe: string;
   serie: string;
@@ -594,6 +596,129 @@ function determineSituacao(cStat: string): SituacaoDocumento {
 }
 
 /**
+ * Classifica o tipo de nota fiscal baseado no CFOP
+ * @param cfop - Código Fiscal de Operações e Prestações
+ * @returns Descrição do tipo de operação
+ */
+function classificarTipoNotaPorCFOP(cfop: string): string {
+  if (!cfop || cfop.length !== 4) return 'Não identificado';
+
+  const prefixo = cfop.charAt(0);
+  const codigo = cfop.substring(1);
+
+  // Determina direção
+  let direcao = '';
+  switch (prefixo) {
+    case '1':
+      direcao = 'Entrada Estadual';
+      break;
+    case '2':
+      direcao = 'Entrada Interestadual';
+      break;
+    case '3':
+      direcao = 'Entrada Exterior';
+      break;
+    case '5':
+      direcao = 'Saída Estadual';
+      break;
+    case '6':
+      direcao = 'Saída Interestadual';
+      break;
+    case '7':
+      direcao = 'Saída Exterior';
+      break;
+    default:
+      return 'CFOP Inválido';
+  }
+
+  // Operações mais comuns
+  const operacoes: Record<string, string> = {
+    '101': 'Compra p/ Industrialização',
+    '102': 'Compra p/ Comercialização',
+    '103': 'Compra p/ Uso/Consumo',
+    '111': 'Compra p/ Industrialização (Simples)',
+    '116': 'Compra p/ Industrialização (Material Uso/Consumo)',
+    '117': 'Compra p/ Comercialização (Não Contribuinte)',
+    '118': 'Compra Prod. Primário p/ Industrialização',
+    '120': 'Compra p/ Industrialização (ST)',
+    '121': 'Compra p/ Comercialização (ST)',
+    '122': 'Compra p/ Uso/Consumo (ST)',
+    '124': 'Industrialização p/ Terceiro',
+    '125': 'Industrialização Recebida p/ Venda',
+    '151': 'Transferência p/ Industrialização',
+    '152': 'Transferência p/ Comercialização',
+    '153': 'Transferência p/ Uso/Consumo',
+    '201': 'Devolução de Venda p/ Industrialização',
+    '202': 'Devolução de Venda p/ Comercialização',
+    '203': 'Devolução de Venda p/ Uso/Consumo',
+    '251': 'Compra de Energia Elétrica',
+    '252': 'Compra de Energia Elétrica (ST)',
+    '301': 'Importação p/ Industrialização',
+    '302': 'Importação p/ Comercialização',
+    '303': 'Importação p/ Uso/Consumo',
+    '401': 'Compra p/ Industrialização (Prod. Primário)',
+    '403': 'Compra p/ Uso/Consumo (Prod. Primário)',
+    '405': 'Compra p/ Comercialização (Produtor)',
+    '408': 'Transferência p/ Produção Rural',
+    '409': 'Devolução de Remessa p/ Venda',
+    '410': 'Devolução de Venda de Produção',
+    '411': 'Devolução de Venda (Produtor)',
+    '414': 'Retorno Remessa p/ Venda Fora',
+    '415': 'Retorno Armazém Geral',
+    '451': 'Compra Energia Elétrica (Produtor)',
+    '501': 'Venda de Produção',
+    '502': 'Venda de Mercadoria (Adq. Terceiros)',
+    '503': 'Venda (Não Contribuinte)',
+    '504': 'Venda Prod. Primário',
+    '505': 'Remessa p/ Industrialização',
+    '506': 'Remessa p/ Comercialização',
+    '551': 'Venda de Ativo Imobilizado',
+    '552': 'Transferência de Ativo Imobilizado',
+    '553': 'Devolução de Compra p/ Industrialização',
+    '554': 'Devolução de Compra p/ Comercialização',
+    '555': 'Devolução de Compra p/ Uso/Consumo',
+    '556': 'Devolução de Bem do Ativo',
+    '557': 'Transferência de Material p/ Uso/Consumo',
+    '603': 'Ressarcimento de ICMS (ST)',
+    '651': 'Venda de Energia Elétrica',
+    '652': 'Venda de Energia Elétrica (ST)',
+    '653': 'Venda Energia (Não Contribuinte)',
+    '901': 'Remessa p/ Industrialização',
+    '902': 'Retorno de Industrialização',
+    '903': 'Retorno Simbólico',
+    '904': 'Remessa p/ Venda Fora',
+    '905': 'Remessa p/ Depósito Fechado',
+    '906': 'Retorno de Depósito Fechado',
+    '907': 'Retorno Remessa p/ Industrialização',
+    '908': 'Remessa p/ Exposição/Feira',
+    '909': 'Retorno de Exposição/Feira',
+    '910': 'Remessa em Bonificação',
+    '911': 'Remessa em Amostra Grátis',
+    '912': 'Remessa em Demonstração',
+    '913': 'Retorno Remessa p/ Demonstração',
+    '914': 'Remessa em Consignação',
+    '915': 'Retorno Remessa em Consignação',
+    '916': 'Remessa p/ Simples Faturamento',
+    '917': 'Retorno Remessa p/ Simples Faturamento',
+    '918': 'Devolução Remessa p/ Industrialização',
+    '919': 'Devolução Remessa Simbólica',
+    '920': 'Remessa p/ Armazém Geral',
+    '921': 'Retorno de Armazém Geral',
+    '922': 'Lançamento de Crédito (ST)',
+    '923': 'Remessa p/ Industrialização (ST)',
+    '924': 'Retorno de Industrialização (ST)',
+    '925': 'Retorno Simbólico (ST)',
+    '931': 'Lançamento de Crédito Fiscal',
+    '932': 'Aquisição Serviço de Transporte',
+    '933': 'Aquisição Serviço de Comunicação',
+    '949': 'Outra Entrada de Mercadoria',
+  };
+
+  const descricaoOperacao = operacoes[codigo] || 'Operação Fiscal';
+  return `${direcao} - ${descricaoOperacao}`;
+}
+
+/**
  * Detecta tipo de operação (Entrada/Saída) em NF-e
  * 
  * LÓGICA CORRETA:
@@ -891,6 +1016,12 @@ function parseNFe(doc: Element, fileName: string): NotaFiscal {
   // Chave de acesso
   const chaveAcesso = infNFe?.getAttribute('Id')?.replace('NFe', '') ?? '';
   
+  // CFOP - Extrai do primeiro item da nota
+  const primeiroItem = getElementsByLocalName(doc, 'det')[0];
+  const prod = primeiroItem ? findElementByLocalName(primeiroItem, 'prod') : null;
+  const cfop = prod ? getTextContent(prod, 'CFOP') : '';
+  const tipoNF = classificarTipoNotaPorCFOP(cfop);
+  
   // Parceiro (fornecedor ou cliente conforme tipo de operação)
   const parceiro = tipoOperacao === 'Saída' ? dest : emit;
   const nome = getTextContent(parceiro, 'xNome');
@@ -943,7 +1074,6 @@ function parseNFe(doc: Element, fileName: string): NotaFiscal {
   const aliquotaDIFAL = baseICMS > 0 ? Math.round((valorDIFAL / baseICMS) * 100 * 100) / 100 : 0;
 
   // Redução ICMS do primeiro item
-  const primeiroItem = getElementsByLocalName(doc, 'det')[0];
   const icmsElement = primeiroItem ? findElementByLocalName(primeiroItem, 'ICMS') : null;
   const reducaoICMS = icmsElement?.children[0] ? getNumericContent(icmsElement.children[0], 'pRedBC') : 0;
 
@@ -976,6 +1106,8 @@ function parseNFe(doc: Element, fileName: string): NotaFiscal {
     id: crypto.randomUUID(),
     tipo: 'NF-e',
     tipoOperacao,
+    tipoNF,
+    cfop,
     numero: getTextContent(ide, 'nNF'),
     numeroCTe: '',
     serie: getTextContent(ide, 'serie'),
@@ -1106,6 +1238,8 @@ function parseCTe(doc: Element, fileName: string): NotaFiscal {
     id: crypto.randomUUID(),
     tipo: 'CT-e',
     tipoOperacao,
+    tipoNF: 'CT-e (Conhecimento de Transporte)',
+    cfop: '',
     numero: getTextContent(ide, 'nCT'),
     numeroCTe: getTextContent(ide, 'nCT'),
     serie: getTextContent(ide, 'serie'),

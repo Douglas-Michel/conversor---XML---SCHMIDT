@@ -70,13 +70,28 @@ export function DataTable({ data }: DataTableProps) {
                   <TableCell className="text-sm text-muted-foreground text-center whitespace-nowrap">
                     {nota.dataEmissao}
                   </TableCell>
-                  <TableCell className="text-center">
-                    <Badge 
-                      variant={nota.tipoOperacao === 'Entrada' ? 'blue' : 'destructive'}
-                      className="text-xs whitespace-nowrap"
-                    >
-                      {nota.tipoOperacao}
-                    </Badge>
+                  <TableCell className="text-center min-w-[180px]">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="space-y-1">
+                          <Badge 
+                            variant={nota.tipoOperacao === 'Entrada' ? 'blue' : 'destructive'}
+                            className="text-xs whitespace-nowrap w-full justify-center"
+                          >
+                            {nota.tipoOperacao}
+                          </Badge>
+                          <div className="text-xs text-muted-foreground truncate max-w-[200px]" title={nota.tipoNF}>
+                            {nota.tipoNF}
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <div className="space-y-1">
+                          <p className="font-semibold">{nota.tipoNF}</p>
+                          {nota.cfop && <p className="text-xs">CFOP: {nota.cfop}</p>}
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
                   </TableCell>
                   <TableCell className="max-w-[250px] truncate text-sm" title={nota.fornecedorCliente}>
                     {nota.fornecedorCliente}
