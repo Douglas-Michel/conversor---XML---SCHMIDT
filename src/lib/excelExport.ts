@@ -27,18 +27,19 @@ export function exportToExcel(notas: NotaFiscal[], fileName: string = 'notas_fis
     }
   });
 
-  // Helper function to convert dd/MM/yyyy string to Excel serial date number
+  // Helper function to convert dd/MM/yyyy string to Excel Date with fixed time to avoid timezone issues
   const parseDate = (dateStr: string): Date | string => {
     if (!dateStr) return '';
     const [day, month, year] = dateStr.split('/');
     if (!day || !month || !year) return '';
-    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    // Create date at noon local time to avoid timezone boundary issues
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0);
   };
 
   // Main sheet: keep same columns/order as the UI table for visual parity
   const data = normalizedNotas.map((nota) => ({
     'DATA EMISSÃO': parseDate(nota.dataEmissao || today),
-    'TIPO NF': nota.tipoOperacao?.toUpperCase() || '',
+    'TIPO NF': nota.tipoOperacao || '',
     'FORNECEDOR/CLIENTE': nota.fornecedorCliente?.toUpperCase() || '',
     'Nº NF-E': nota.tipo === 'NF-e' ? nota.numero : '',
     'Nº CT-E': nota.numeroCTe || '',
@@ -126,7 +127,7 @@ export function exportToExcel(notas: NotaFiscal[], fileName: string = 'notas_fis
 
   const columnWidths = [
     { wch: 12 },  // Data Emissão
-    { wch: 10 },  // Tipo NF
+    { wch: 12 },  // Tipo NF (aumentado para exibir "Entrada" ou "Saída" completo)
     { wch: 40 },  // Fornecedor/Cliente
     { wch: 12 },  // Nº NF-e
     { wch: 12 },  // Nº CT-e
