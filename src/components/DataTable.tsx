@@ -73,21 +73,22 @@ export function DataTable({ data }: DataTableProps) {
                   <TableCell className="text-center min-w-[180px]">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
+                          <div className="text-xs font-medium text-foreground truncate max-w-[200px]" title={nota.tipoNF}>
+                            {nota.tipoNF}
+                          </div>
                           <Badge 
                             variant={nota.tipoOperacao === 'Entrada' ? 'blue' : 'destructive'}
                             className="text-xs whitespace-nowrap w-full justify-center"
                           >
                             {nota.tipoOperacao}
                           </Badge>
-                          <div className="text-xs text-muted-foreground truncate max-w-[200px]" title={nota.tipoNF}>
-                            {nota.tipoNF}
-                          </div>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
                         <div className="space-y-1">
                           <p className="font-semibold">{nota.tipoNF}</p>
+                          <p className="text-xs">Operação: {nota.tipoOperacao}</p>
                           {nota.cfop && <p className="text-xs">CFOP: {nota.cfop}</p>}
                         </div>
                       </TooltipContent>

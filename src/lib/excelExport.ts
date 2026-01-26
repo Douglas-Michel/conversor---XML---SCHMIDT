@@ -39,9 +39,7 @@ export function exportToExcel(notas: NotaFiscal[], fileName: string = 'notas_fis
   // Main sheet: keep same columns/order as the UI table for visual parity
   const data = normalizedNotas.map((nota) => ({
     'DATA EMISSÃO': parseDate(nota.dataEmissao || today),
-    'TIPO NF': nota.tipoOperacao || '',
-    'CFOP': nota.cfop || '',
-    'CLASSIFICAÇÃO': nota.tipoNF || '',
+    'TIPO NF': `${nota.tipoNF || ''} - ${nota.tipoOperacao || ''}`,
     'FORNECEDOR/CLIENTE': nota.fornecedorCliente?.toUpperCase() || '',
     'Nº NF-E': nota.tipo === 'NF-e' ? nota.numero : '',
     'Nº CT-E': nota.numeroCTe || '',
@@ -129,7 +127,7 @@ export function exportToExcel(notas: NotaFiscal[], fileName: string = 'notas_fis
 
   const columnWidths = [
     { wch: 12 },  // Data Emissão
-    { wch: 12 },  // Tipo NF (aumentado para exibir "Entrada" ou "Saída" completo)
+    { wch: 25 },  // Tipo NF (combinado: classificação + operação)
     { wch: 40 },  // Fornecedor/Cliente
     { wch: 12 },  // Nº NF-e
     { wch: 12 },  // Nº CT-e
